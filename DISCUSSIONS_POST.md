@@ -1,7 +1,7 @@
 # Ready-to-copy ReVanced GitHub Discussion Post
 
-**Target URL:** https://github.com/ReVanced/revanced-patches/discussions/new
-**Category:** Ideas (or General)
+**Target URL:** https://github.com/ReVanced/revanced-discussions/discussions/new?category=general
+**Category:** General
 **Title:** `[Research / PoC] Hooking TTVideoEngine in TikTok to skip in-stream sponsored segments`
 
 ---
@@ -56,6 +56,6 @@ Instead of sending plaintext video IDs, the client queries `GET /api/skip/v1/{pr
 
 I'm not maintaining a standalone APK fork, but I wanted to make the reverse-engineering artifacts, signatures, and bisection logic open for ReVanced. 
 
-All source code and documentation: https://github.com/YOUR_USERNAME/tiktok-sponsorblock-poc
+All source code and documentation: https://github.com/kozliq/tiktok-sponsorblock-poc
 
 Hope this is helpful for future TikTok patches!
