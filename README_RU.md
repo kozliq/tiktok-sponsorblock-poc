@@ -197,7 +197,7 @@ private static long nextDelay(long pos, Segment next, long dur) {
 ## 6. Итоги
 
 В рамках этого Proof of Concept удалось решить технические задачи:
-1. Подтверждена возможность надежного перехвата `TTVideoEngine` через сигнатуры параметров без привязки к обфусцированным именам методов.
+1. Показано, что `TTVideoEngine` можно перехватить по типам параметров на необфусцированном классе, без привязки к обфусцированным именам методов. Один тип параметра (`Lo6f/c0;`, слушатель перемотки) всё же зависит от версии, поэтому точки перехвата нужно перепроверять на каждой версии TikTok скриптом `patch/tools/find_hooks.py`.
 2. Адаптивный шаг таймера снизил частоту опроса плеера до 1.6 вызова/сек.
 3. Протокол с 16-битным префиксом хэша решает задачу приватности при запросах к базе.
 
@@ -213,3 +213,23 @@ private static long nextDelay(long pos, Segment next, long dur) {
 * Логика бисекции и пропуска: `app/revanced/extension/tiktok/mimo/SponsorManager.java`
 * Спецификация API префиксов: эндпоинты `/api/skip/v1/{prefix}`
 * Логика консенсуса меток: `worker/src/consensus.ts`
+
+### Что где лежит
+
+```
+patch/overlay/   патч ReVanced (Kotlin) + расширение (Java) — кладётся поверх чекаута revanced-patches
+patch/apply.sh   клонирует revanced-patches и копирует overlay
+patch/sim/       симуляция автопропуска: модель на Python + прогон настоящего SponsorManager.java на JVM
+patch/tools/     find_hooks.py — проверка всех точек перехвата на конкретном APK без сборки
+worker/          Cloudflare Worker + D1: k-анонимное чтение, отметки, голоса, консенсус, тесты
+```
+
+### Как повторить цифры
+
+```bash
+python3 patch/sim/autoskip_sim.py 10000   # модель tick()/skip() на Python
+sh patch/sim/jvm/run.sh 10000             # настоящий SponsorManager.java (JDK 17 + Android SDK android-34)
+cd worker && npm install && npm test      # тесты консенсуса и API
+```
+
+Статус: патч собирается в APK для TikTok 36.5.4 (`com.zhiliaoapp.musically`). Проверка на телефоне идёт; сам APK TikTok здесь не раздаётся.

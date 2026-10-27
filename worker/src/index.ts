@@ -268,7 +268,7 @@ export default {
 					return cached(req, env, ctx, () => segmentsOf(id, env));
 				}
 				if (path === "/api/status") return cached(req, env, ctx, () => status(env));
-				if (path === "/") return json({ name: "Мимо API", docs: "https://github.com/kozliq/mimo" });
+				if (path === "/") return json({ name: "Мимо API", docs: "https://github.com/kozliq/tiktok-sponsorblock-poc" });
 			}
 			if (req.method === "POST") {
 				if (await limited(env.WRITE_LIMIT, req, env)) return fail(429, "слишком часто");

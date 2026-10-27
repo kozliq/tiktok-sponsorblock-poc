@@ -210,7 +210,7 @@ This project was built as an exploratory **Proof of Concept (PoC)**.
 I do not intend to maintain or distribute a patched standalone TikTok APK. Maintaining a custom fork of a 400 MB proprietary application—dealing with anti-tampering heuristics, broken login flows, UI refactors, and regional variations—is an endless maintenance chore that has nothing to do with reverse engineering.
 
 The core technical objectives of this research were achieved:
-1. Proved that `TTVideoEngine` can be hooked stably via parameter typing without relying on volatile obfuscated names.
+1. Showed that `TTVideoEngine` can be hooked via method type signatures on a non-obfuscated class instead of obfuscated method names. One parameter type (`Lo6f/c0;`, the seek listener) is still version-specific, so the hooks must be re-checked for every TikTok release with `patch/tools/find_hooks.py`.
 2. Reduced playback polling overhead to 1.6 calls/sec using bisection.
 3. Demonstrated that in-stream sponsor skipping can function with full $k$-anonymity at the edge.
 
@@ -224,3 +224,23 @@ All architectural concepts, Smali patterns, and signatures are open for the comm
 * Bisection & collision manager: `app/revanced/extension/tiktok/mimo/SponsorManager.java`
 * Prefix-based API specification: `/api/skip/v1/{prefix}` (16-bit SHA-256)
 * Segment consensus logic: `worker/src/consensus.ts`
+
+### Repository Layout
+
+```
+patch/overlay/   ReVanced patch (Kotlin) + extension (Java) — copied on top of a revanced-patches checkout
+patch/apply.sh   clones revanced-patches and drops the overlay in
+patch/sim/       auto-skip simulation: Python model + harness that runs the real SponsorManager.java on the JVM
+patch/tools/     find_hooks.py — checks every hook point against a given TikTok APK without building
+worker/          Cloudflare Worker + D1: k-anonymous read API, submissions, votes, consensus, tests
+```
+
+### Reproduce the Numbers
+
+```bash
+python3 patch/sim/autoskip_sim.py 10000   # Python model of tick()/skip()
+sh patch/sim/jvm/run.sh 10000             # the real SponsorManager.java (JDK 17 + Android SDK android-34)
+cd worker && npm install && npm test      # consensus + API tests
+```
+
+Status: the patch builds into an APK for TikTok 36.5.4 (`com.zhiliaoapp.musically`). On-device field testing is in progress; the TikTok APK itself is not distributed here.

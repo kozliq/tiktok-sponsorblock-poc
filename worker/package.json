@@ -1,0 +1,19 @@
+{
+  "name": "mimo-api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --local --port 8799",
+    "deploy": "wrangler deploy",
+    "db:local": "wrangler d1 migrations apply mimo --local",
+    "db:remote": "wrangler d1 migrations apply mimo --remote",
+    "check": "tsc --noEmit",
+    "test": "node --test test/*.test.ts",
+    "e2e": "node test/e2e.mjs"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261006.1",
+    "typescript": "5.9.3",
+    "wrangler": "4.149.0"
+  }
+}
